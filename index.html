@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our 184 Days | Happy Anniversary Jannuuoo</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --bg-dark: #050505;
+            --accent-primary: #ff3366;
+            --accent-secondary: #7000ff;
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none; 
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Custom Cursor */
+        #cursor {
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #cursor i {
+            font-size: 10px;
+            opacity: 0;
+            color: black;
+            transition: opacity 0.2s;
+        }
+
+        .bg-glow {
+            position: fixed;
+            width: 80vw;
+            height: 80vw;
+            background: radial-gradient(circle, rgba(112, 0, 255, 0.1) 0%, rgba(0,0,0,0) 70%);
+            top: -30%;
+            left: -20%;
+            z-index: -2;
+            filter: blur(80px);
+        }
+
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+            perspective: 1000px; /* For 3D Tilt */
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 10vw, 8rem);
+            font-style: italic;
+            background: linear-gradient(to right, #fff, var(--accent-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            opacity: 0;
+        }
+
+        .btn-start {
+            margin-top: 2rem;
+            padding: 1.2rem 3rem;
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: white;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-size: 0.7rem;
+            backdrop-filter: blur(10px);
+            transition: background 0.3s, color 0.3s;
+            opacity: 0;
+            position: relative;
+        }
+
+        .card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            padding: 4rem 3rem;
+            border-radius: 32px;
+            max-width: 650px;
+            text-align: center;
+            margin: 2rem 0;
+            opacity: 0;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
+        }
+
+        .counter-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin: 2.5rem 0;
+        }
+
+        .counter-item span {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            color: var(--accent-primary);
+        }
+
+        .message-text {
+            font-size: 1.25rem;
+            line-height: 1.8;
+            color: var(--text-dim);
+            text-align: left;
+            min-height: 200px;
+        }
+
+        /* --- Quiz Styles --- */
+        .quiz-btns {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-top: 2rem;
+            position: relative;
+        }
+
+        .btn-quiz {
+            padding: 0.8rem 2.5rem;
+            border-radius: 50px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass);
+            color: white;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+        }
+
+        #no-btn {
+            position: relative;
+            z-index: 10;
+        }
+
+        .btn-yes:hover {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.05);
+            z-index: 1000;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--accent-secondary), var(--accent-primary));
+            width: 0%;
+        }
+
+        #final-heart {
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        #final-heart:hover {
+            transform: scale(1.3) rotate(10deg);
+        }
+
+        footer {
+            padding: 4rem;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="cursor"><i data-lucide="heart"></i></div>
+    <canvas id="bg-canvas"></canvas>
+    <div class="bg-glow"></div>
+    <div class="progress-container"><div class="progress-bar"></div></div>
+
+    <section class="hero">
+        <div class="magnetic-wrap">
+            <i data-lucide="heart" style="color: var(--accent-primary); margin-bottom: 1rem;"></i>
+        </div>
+        <h1 id="hero-title">Half a year with my gurl.</h1>
+        <p style="color: var(--text-dim); letter-spacing: 6px; opacity: 0;" id="hero-sub">184 DAYS OF US</p>
+        <button class="btn-start" onclick="scrollToNext()">Begin The Journey</button>
+    </section>
+
+    <section id="stats">
+        <div class="card tilt-element">
+            <i data-lucide="calendar" style="margin-bottom: 1rem; color: var(--accent-secondary);"></i>
+            <h2 style="font-family: 'Playfair Display'; font-size: 2.5rem; margin-bottom: 1rem;">The Timeline</h2>
+            <div class="counter-grid">
+                <div class="counter-item">
+                    <span class="count" data-target="184">0</span>
+                    <label>Days</label>
+                </div>
+                <div class="counter-item">
+                    <span class="count" data-target="4416">0</span>
+                    <label>Hours</label>
+                </div>
+                <div class="counter-item">
+                    <span class="count" data-target="264960">0</span>
+                    <label>Minutes</label>
+                </div>
+            </div>
+            <p style="color: var(--text-dim);">...and I haven't stopped smiling for a single one of them.</p>
+        </div>
+    </section>
+
+    <section id="message">
+        <div class="card tilt-element" style="max-width: 800px;">
+            <i data-lucide="quote" style="color: var(--accent-primary); margin-bottom: 1.5rem;"></i>
+            <div id="typewriter" class="message-text"></div>
+        </div>
+    </section>
+
+    <!-- NEW INTERACTIVE QUIZ SECTION -->
+    <section id="quiz">
+        <div class="card tilt-element">
+            <i data-lucide="help-circle" style="color: var(--accent-secondary); margin-bottom: 1rem;"></i>
+            <h2 id="quiz-question" style="font-family: 'Playfair Display'; font-size: 2.5rem; margin-bottom: 1rem;">Do you love me?</h2>
+            <p id="quiz-subtext" style="color: var(--text-dim);">Enk ariyam ennalum paraaa...</p>
+            
+            <div class="quiz-btns">
+                <button class="btn-quiz btn-yes" onclick="answerYes()">YES</button>
+                <button class="btn-quiz" id="no-btn" onmouseover="moveNo()">NO</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="final">
+        <div class="card tilt-element" style="border: 1px solid var(--accent-primary);">
+            <h2 style="font-family: 'Playfair Display'; font-size: 2rem;">Here's to the next 6 months.</h2>
+            <p style="color: var(--text-dim); margin: 1.5rem 0;">Click the heart to celebrate our day.</p>
+            <div id="final-heart" onclick="celebrate()">
+                <i data-lucide="heart" fill="currentColor" style="color: var(--accent-primary); width: 64px; height: 64px;"></i>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; • FOR MY FAVORITE PERSON BY YOUR COMRADE •</p>
+    </footer>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger, TextPlugin);
+        lucide.createIcons();
+
+        // 1. Interactive Background Particles
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function initCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.opacity = Math.random() * 0.5;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 100; i++) particles.push(new Particle());
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        initCanvas();
+        animateParticles();
+        window.addEventListener('resize', initCanvas);
+
+        // 2. Advanced Cursor Logic
+        const cursor = document.getElementById('cursor');
+        const cursorIcon = cursor.querySelector('i');
+
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, {
+                x: e.clientX,
+                y: e.clientY,
+                duration: 0.1
+            });
+        });
+
+        document.querySelectorAll('button, .tilt-element, #final-heart').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                gsap.to(cursor, { scale: 5, background: 'white' });
+                cursorIcon.style.opacity = "1";
+            });
+            el.addEventListener('mouseleave', () => {
+                gsap.to(cursor, { scale: 1, background: 'white' });
+                cursorIcon.style.opacity = "0";
+            });
+        });
+
+        // 3. Hero Animations
+        window.addEventListener('load', () => {
+            const tl = gsap.timeline();
+            tl.to('#hero-title', { opacity: 1, y: 0, duration: 1.5, ease: "expo.out" })
+              .to('#hero-sub', { opacity: 1, y: 0, duration: 1 }, "-=1")
+              .to('.btn-start', { opacity: 1, y: 0, duration: 1 }, "-=0.5");
+        });
+
+        // 4. 3D Card Tilt Effect
+        document.querySelectorAll('.tilt-element').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+
+                gsap.to(card, {
+                    rotateX: rotateX,
+                    rotateY: rotateY,
+                    duration: 0.5,
+                    ease: "power2.out"
+                });
+            });
+
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.5 });
+            });
+        });
+
+        // 5. Scroll & Counter Animation
+        gsap.utils.toArray('.card').forEach(card => {
+            gsap.to(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 80%",
+                },
+                opacity: 1,
+                y: -20,
+                duration: 1
+            });
+        });
+
+        // Numbers Counter
+        ScrollTrigger.create({
+            trigger: "#stats",
+            start: "top 60%",
+            onEnter: () => {
+                document.querySelectorAll('.count').forEach(count => {
+                    const target = +count.getAttribute('data-target');
+                    gsap.to(count, {
+                        innerText: target,
+                        duration: 2,
+                        snap: { innerText: 1 },
+                        ease: "power2.out"
+                    });
+                });
+            }
+        });
+        
+
+        // 6. Typewriter Effect
+        const message = "Six months ago, oru breadum ayt vannathaaa. These 184 days haven't just been a passage of time, but a collection of moments that changed me. From our first laugh to our deepest talks, you've become my ellam ellam. Happy anniversary to the person who makes every second count .love you pottathikutyyy...forever and ever...ummaaa ummaaa ummaaa";
+        
+        gsap.to("#typewriter", {
+            scrollTrigger: {
+                trigger: "#message",
+                start: "top 60%",
+            },
+            text: message,
+            duration: 4,
+            ease: "none"
+        });
+
+        // --- NEW QUIZ LOGIC ---
+        const quizData = [
+            { q: "Am I your pottankutti?", a: " 🤍🤍🤍" },
+            { q: "Will you stay forever and ever?", a: "🥹🥹🥹" },
+            { q: "promise on me?", a:"orennam enkilummm😁😁😁"},
+            { q: "can i get an ummaaa...", a:"last last last😚😚😚"},
+            { q: "orennode tharuooo...", a:"promise on you ith sherikkum last..."},
+            { q: "onnode thanna oru gift tharam", a:""},
+            { q: "Ready for the gift?", a: "✨" }
+            
+        ];
+        let currentQuiz = 0;
+
+        function moveNo() {
+            const btn = document.getElementById('no-btn');
+            // Randomly jump within the card boundaries
+            const x = (Math.random() - 0.5) * 300;
+            const y = (Math.random() - 0.5) * 200;
+            gsap.to(btn, {
+                x: x,
+                y: y,
+                duration: 0.2,
+                ease: "power2.out"
+            });
+        }
+
+        function answerYes() {
+            if(currentQuiz < quizData.length) {
+                const subtext = document.getElementById('quiz-subtext');
+                const question = document.getElementById('quiz-question');
+                
+                // Celebrate small click
+                confetti({ particleCount: 30, spread: 50, origin: { y: 0.8 } });
+
+                gsap.to(".quiz-btns, #quiz-question", {
+                    opacity: 0,
+                    y: -10,
+                    duration: 0.3,
+                    onComplete: () => {
+                        question.innerText = quizData[currentQuiz].q;
+                        subtext.innerText = quizData[currentQuiz-1] ? quizData[currentQuiz-1].a : "only your ❤️";
+                        
+                        // Reset NO button
+                        gsap.set("#no-btn", {x: 0, y: 0});
+                        
+                        gsap.to(".quiz-btns, #quiz-question", { opacity: 1, y: 0, duration: 0.3 });
+                        currentQuiz++;
+                    }
+                });
+            } else {
+                // Final answer logic
+                document.getElementById('quiz-question').innerText = "congratulations you got a comrade";
+                document.getElementById('quiz-subtext').innerText = "You're safe and stuck with me now.";
+                gsap.to(".quiz-btns", { display: 'none' });
+                setTimeout(() => {
+                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                }, 1000);
+            }
+        }
+
+        // 7. Confetti Celebration
+        function celebrate() {
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ff3366', '#7000ff', '#ffffff']
+            });
+            
+            gsap.fromTo("#final-heart", 
+                { scale: 1 }, 
+                { scale: 1.5, duration: 0.2, yoyo: true, repeat: 1 }
+            );
+        }
+
+        // Scroll Progress
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.querySelector(".progress-bar").style.width = scrolled + "%";
+        });
+
+        function scrollToNext() {
+            window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
